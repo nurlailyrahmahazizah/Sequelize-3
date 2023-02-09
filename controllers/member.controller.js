@@ -110,7 +110,7 @@ exports.deleteMember = async(request, response) => {
     
     const member = await memberModel.findOne({ where: {id:id}})
     const oldProfile = member.profile
-    const pathProfile = path.join(__dirname, `../cover`)
+    const pathProfile = path.join(__dirname, `../cover`, oldProfile)
     
     if(fs.existsSync(pathProfile)){
         fs.unlink(pathProfile, error => console.log(error))
