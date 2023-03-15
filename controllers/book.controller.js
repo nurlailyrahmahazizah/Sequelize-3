@@ -40,39 +40,51 @@ exports.findBook = async(request, response) => {
         message: 'All Books have been loaded'
     })
 }
+let validateBook = require(`../middlewares/book-validation`)
 exports.addBook = (request, response) => {
-    upload(request, response, async error => {
-        if (error) {
-            return response.json({ message: error })
-        }
-        if (!request.file) {
-            return response.json({ message: `Nothing to upload`})
-        }
-        let newBook = {
-            isbn: request.body.isbn,
-            title: request.body.title,
-            author: request.body.author,
-            publisher: request.body.publisher,
-            category: request.body.category,
-            stock: request.body.stock,
-            cover: request.file.filename
-        }
-
-        bookModel.create(newBook)
-            .then(result => {
-                return response.json({
-                    success: true,
-                    data: result,
-                    message: `New book has been inserted`
+    try {
+        upload(request, response, async error => {
+            if (error) {
+                return response.json({ message: error })
+            }
+            if (!request.file) {
+                return response.json({ message: `Nothing to upload`})
+            }
+            let validation = validateBook(request)
+            if (!validation.status) {
+                return response.json({ status: false, message: validation.message })
+            }
+            let newBook = {
+                isbn: request.body.isbn,
+                title: request.body.title,
+                author: request.body.author,
+                publisher: request.body.publisher,
+                category: request.body.category,
+                stock: request.body.stock,
+                cover: request.file.filename
+            }
+    
+            bookModel.create(newBook)
+                .then(result => {
+                    return response.json({
+                        success: true,
+                        data: result,
+                        message: `New book has been inserted`
+                    })
                 })
-            })
-            .catch(error => {
-                return response.json({
-                    success: false,
-                    message: error.message
+                .catch(error => {
+                    return response.json({
+                        success: false,
+                        message: error.message
+                    })
                 })
-            })
-    })
+        })
+    } catch (error) {
+        return response.json({
+            success: false,
+            message: error.message
+        })
+    }
 }
 exports.updateBook = async(request, response) => {
     upload(request, response, async error => {

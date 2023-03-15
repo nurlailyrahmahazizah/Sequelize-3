@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-        const acceptedType = [`image/jpg`, `image/jpeg`, `image/png`]
+        const acceptedType = [`image/jpg`, `image/jpeg`, `image/png`, `image/jfif`]
         if(!acceptedType.includes(file.mimetype)){
             cb(null,false)
             return cb(`invalid file type (${file.mimetype})`)
